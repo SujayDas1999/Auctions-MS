@@ -6,6 +6,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Contracts;
 using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,11 +57,12 @@ namespace AuctionService.Controllers
             return Ok(auctionReadDto);
         }
 
+        [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateAuction([FromBody] AuctionCreateDto auctionCreateDto)
         {
             Auction auction = _mapper.Map<Auction>(auctionCreateDto);
-            auction.Seller = "test";
+            auction.Seller = User.Identity.Name;
 
 
             _context.Auctions.Add(auction);
@@ -80,6 +82,7 @@ namespace AuctionService.Controllers
             return CreatedAtAction(nameof(GetAuctionItemById), new { auction.Id }, _mapper.Map<AuctionReadDto>(auction));
         }
 
+        [Authorize]
         [HttpPut("update/{id}")]
         public async Task<ActionResult> UpdateAuction(Guid id, [FromBody] AuctionUpdateDto auctionUpdateDto)
         {
@@ -90,6 +93,7 @@ namespace AuctionService.Controllers
             if (auction == null) return NotFound();
 
             //TODO: check seller with username
+            if (auction.Seller != User.Identity.Name) return Forbid("---> Unable to update the details");
 
             auction.Item.Make = auctionUpdateDto.Make ?? auction.Item.Make;
             auction.Item.Model = auctionUpdateDto.Model ?? auction.Item.Model;
@@ -106,6 +110,7 @@ namespace AuctionService.Controllers
 
         }
 
+        [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<ActionResult> DeleteAuction(Guid id)
         {
@@ -114,10 +119,11 @@ namespace AuctionService.Controllers
             if (auction == null) return NotFound();
 
             //TODO: check seller with username
+            if (auction.Seller != User.Identity.Name) return Forbid("---> Unable to update the details");
 
             _context.Auctions.Remove(auction);
 
-            await _publishEndpoint.Publish<AuctionDeleted>(new {Id = auction.Id.ToString()});
+            await _publishEndpoint.Publish<AuctionDeleted>(new { Id = auction.Id.ToString() });
 
             var result = await _context.SaveChangesAsync() > 0;
 
