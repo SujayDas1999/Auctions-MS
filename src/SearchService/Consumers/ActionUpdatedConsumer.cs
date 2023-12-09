@@ -18,7 +18,7 @@ namespace SearchService.Consumers
         {
             Console.WriteLine("---> Consuming Auction Updated Event:" + context.Message.Id);
 
-            var item =  _mapper.Map<Item>(context.Message);
+            var item = _mapper.Map<Item>(context.Message);
 
             //Item item = await DB.
 
@@ -32,14 +32,10 @@ namespace SearchService.Consumers
                  x.Mileage
              }, item).ExecuteAsync();
 
-            if(!result.IsAcknowledged)
+            if (!result.IsAcknowledged)
             {
                 throw new MessageException(typeof(AuctionUpdated), "Problem updating auction");
             }
-
-
-            
-
         }
     }
 }

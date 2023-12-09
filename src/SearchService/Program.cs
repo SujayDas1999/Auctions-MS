@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using MongoDB.Entities;
 using Polly;
 using Polly.Extensions.Http;
+using SearchService;
 using SearchService.Consumers;
 using SearchService.Data;
 using SearchService.Models;
@@ -19,16 +20,31 @@ builder.Services.AddHttpClient<AuctionServiceHttpClient>().AddPolicyHandler(GetP
 builder.Services.AddMassTransit(x =>
 {
 
-    x.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
+    x.AddConsumer<AuctionCreatedConsumer>();
+    x.AddConsumer<AuctionDeletedConsumer>();
+    x.AddConsumer<ActionUpdatedConsumer>();
+    x.AddConsumer<BidPlacedConsumer>();
+    x.AddConsumer<AuctionFinishedConsumer>();
+
+
 
     x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
 
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.ReceiveEndpoint("search-auction-created",e =>
+        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
+        {
+            host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+            host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+        });
+        cfg.ReceiveEndpoint("search-auction-created", e =>
         {
             e.UseMessageRetry(r => r.Interval(5, 5));
             e.ConfigureConsumer<AuctionCreatedConsumer>(context);
+            e.ConfigureConsumer<ActionUpdatedConsumer>(context);
+            e.ConfigureConsumer<AuctionDeletedConsumer>(context);
+            e.ConfigureConsumer<BidPlacedConsumer>(context);
+            e.ConfigureConsumer<AuctionFinishedConsumer>(context);
         });
         cfg.ConfigureEndpoints(context);
     });
