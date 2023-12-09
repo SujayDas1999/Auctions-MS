@@ -11,7 +11,7 @@ namespace SearchService.Data
         public static async Task InitDb(WebApplication app)
         {
             await DB.InitAsync("SearchDb", MongoClientSettings
-    .FromConnectionString("mongodb://root:mongopw@localhost:27017/?authSource=admin&readPreference=primary&ssl=false&directConnection=true"));
+    .FromConnectionString(app.Configuration.GetConnectionString("MongoDbConnection")));
 
             await DB.Index<Item>()
             .Key(x => x.Make, KeyType.Text)
