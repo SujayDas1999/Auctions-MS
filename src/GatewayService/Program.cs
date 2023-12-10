@@ -5,6 +5,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
+builder.Services.AddCors(o => o.AddPolicy("TestPolicy", build =>
+{
+    build.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+}));
+
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
     {
@@ -17,6 +23,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 var app = builder.Build();
 
 app.MapReverseProxy();
+
+app.UseCors("TestPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
