@@ -51,7 +51,7 @@ export const paramsSlice = createSlice({
     ) => {
       state.searchTerm = action.payload;
     },
-    setResetTerm: (state: Partial<ParamsState>) => initialState,
+    setResetTerm: () => initialState,
     setOrderBy: (
       state: Partial<ParamsState>,
       action: PayloadAction<string>

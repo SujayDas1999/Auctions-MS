@@ -32,10 +32,14 @@ export default function Listings() {
   }
 
   useEffect(() => {
-    getData(url).then((data: PagedResult<Auction>) => {
-      setData(data);
-      dispatch(setPageCount(data.pageCount));
-    });
+    getData(url)
+      .then((data: PagedResult<Auction>) => {
+        setData(data);
+        dispatch(setPageCount(data.pageCount));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, [url]);
 
   return (

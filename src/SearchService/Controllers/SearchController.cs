@@ -12,6 +12,7 @@ namespace SearchService.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Item>>> GetItems([FromQuery] SearchParams searchParams)
         {
+            Console.WriteLine(searchParams);
             var query = DB.PagedSearch<Item, Item>();
 
             query.Sort(x => x.Ascending(a => a.Make));

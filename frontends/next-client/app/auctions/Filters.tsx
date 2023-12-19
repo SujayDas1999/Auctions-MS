@@ -99,14 +99,7 @@ export default function Filters({ pageCount }: Props) {
             {pageSizeButtons.map((value, i) => (
               <Button
                 key={i}
-                onClick={() =>
-                  dispatch(
-                    setPageSize({
-                      pageCount: pageCount ?? 10,
-                      pageSize: value,
-                    })
-                  )
-                }
+                onClick={() => dispatch(setPageSize(value))}
                 color={`${params.pageSize === value ? "red" : "gray"}`}
                 className="focus:ring-0"
               >

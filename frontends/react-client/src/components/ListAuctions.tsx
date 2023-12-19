@@ -7,9 +7,13 @@ export default function ListAuctions() {
   const [auctions, setAuctions] = useState<AuctionResult | null>(null);
 
   const fetchSearchData = async () => {
-    await axios.get(`http://localhost:6001/search?pageSize=10`).then((res) => {
-      setAuctions(res.data);
-    });
+    await axios
+      .get(
+        `http://localhost:6001/search?filterBy=&orderBy=new&pageCount=1&pageNumber=1&pageSize=100&searchTerm=`
+      )
+      .then((res) => {
+        setAuctions(res.data);
+      });
   };
 
   useEffect(() => {
