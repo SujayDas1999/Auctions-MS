@@ -1,5 +1,6 @@
 import React from "react";
-import { Auction } from "../Models/SearchResult";
+import { Auction } from "../types/SearchResult";
+import CountdownTimer from "./CountdownTimer";
 
 type Props = {
   auction: Auction;
@@ -17,6 +18,9 @@ export default function AuctionCard({ auction }: Props) {
               sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 25vw"
               style={{ width: "100%", height: "100%" }}
             />
+            <div className="absolute bottom-2 left-2">
+              <CountdownTimer auctionEnd={auction.auctionEnd} />
+            </div>
           </div>
         </div>
         <div className="flex justify-between items-center mt-4">

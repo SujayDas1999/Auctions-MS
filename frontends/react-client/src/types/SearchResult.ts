@@ -1,5 +1,5 @@
-export interface AuctionResult {
-  results: Auction[];
+export interface PagedResult<T> {
+  results: T[];
   pageCount: number;
   totalCount: number;
 }
